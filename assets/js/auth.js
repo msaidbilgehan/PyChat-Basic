@@ -1,5 +1,7 @@
 let endpoint_login = '/api/login';
 let endpoint_signup = '/api/signup';
+let endpoint_logout = '/api/logout';
+let endpoint_chat = '/chat';
 
 document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('login-form').addEventListener('submit', function(event) {
@@ -28,7 +30,6 @@ function switchToSignIn() {
 function submitLogin() {
     var username = document.getElementById('login-username').value;
     var password = document.getElementById('login-password').value;
-    console.log(username, password);
 
     // Securely send the plain text password over an HTTPS connection
     $.ajax({
@@ -41,11 +42,13 @@ function submitLogin() {
         }),
         success: function(response) {
             // If login is successful, redirect the user to the next page
-            window.location.href = '/chat';
+            console.log("SUCCESS:", response);
+            redirectOnSuccess(response);
         },
         error: function(xhr) {
             // In case of an error, inform the user
-            alert('Login failed: ' + xhr.responseText);
+            console.log("ERROR:", xhr.responseText);
+            alert('Login failed. Please check your username and password.');
         }
     });
 
@@ -57,7 +60,6 @@ function submitSignup() {
     var username = document.getElementById('signup-username').value;
     var email = document.getElementById('signup-email').value;
     var password = document.getElementById('signup-password').value;
-    console.log(username, password, email);
 
     // Securely send the plain text password over an HTTPS connection
     $.ajax({
@@ -71,13 +73,27 @@ function submitSignup() {
         }),
         success: function(response) {
             // if signup is successful, redirect the user to the next page
-            window.location.href = '/chat';
+            console.log("SUCCESS:", response);
+            redirectOnSuccess(response);
         },
         error: function(xhr) {
             // In case of an error, inform the user
-            alert('Signup failed: ' + xhr.responseText);
+            console.log("ERROR:", xhr.responseText);
+            alert('Signup failed. Please check your username, email, and password.');
         }
     });
 
     return false;
 }
+
+function redirectOnSuccess(response) {
+    console.log("Redirecting to chat page...");
+    localStorage.setItem('access_token_cookie', response.access_token);
+    localStorage.setItem('username', response.username);
+    // for (var i = 0; i < localStorage.length; i++){
+    //     console.log(localStorage.key(i) + "=[" + localStorage.getItem(localStorage.key(i)) + "]");
+    // }
+
+    window.location.href = endpoint_chat;
+}
+

@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from Library.Configurations.paths import DIR_FOLDER_TEMPLATE, DIR_FOLDER_STATIC, DIR_FOLDER_PUBLIC_FILES, DIR_FILE_LOGS_GENERAL, DIR_FILE_DB
 from Library.Configurations.environment import SECRET_KEY, JWT_SECRET_KEY
 from Library.Scripts.tools import create_Logger
-from Library.Database.models import User, MessageLog
 
 from flask import Flask
 # from flask_cors import CORS
@@ -17,8 +16,8 @@ import logging
 print(f"Logger initializing with the following path: {DIR_FILE_LOGS_GENERAL}")
 global_logger = create_Logger(
     name="global_logger",
-    level_stdo=logging.DEBUG,
-    level_file=logging.DEBUG,
+    level_stdo=logging.NOTSET,
+    level_file=logging.NOTSET,
     path=DIR_FILE_LOGS_GENERAL,
     backupCount=3
 )
@@ -36,6 +35,16 @@ app = Flask(
 )
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY  # Use a secure, random key
 app.config['SECRET_KEY'] = SECRET_KEY
+
+# https://flask-jwt-extended.readthedocs.io/en/3.0.0_release/tokens_in_cookies/
+# Only allow JWT cookies to be sent over https. In production, this
+# should likely be True
+app.config['JWT_COOKIE_SECURE'] = False
+
+# Enable csrf double submit protection. See this for a thorough
+# explanation: http://www.redotheweb.com/2015/11/09/api-security.html
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DIR_FILE_DB}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -55,8 +64,6 @@ app.config['UPLOAD_FOLDER'] = DIR_FOLDER_PUBLIC_FILES
 # SQL Alchemy #
 ###############
 db = SQLAlchemy(app)
-with app.app_context():
-    db.create_all()  # Creates all tables defined in your models
 
 #######
 # JWT #
@@ -80,4 +87,5 @@ socketio = SocketIO(
 ##########
 # Routes #
 ##########
-from Library.Routes import pages, apis
+from Library.Routes import apis, pages
+import Library.__init_db__

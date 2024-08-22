@@ -2,6 +2,7 @@ from Library import app, global_logger
 
 from flask import render_template, redirect, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
+from flask_jwt_extended.exceptions import NoAuthorizationError
 
 #############
 ### PAGES ###
@@ -36,10 +37,12 @@ def page_auth():
 # @jwt_required()
 def page_chat():
     try:
-        verify_jwt_in_request(optional=True)
+        verify_jwt_in_request()
         current_user = get_jwt_identity()
         if current_user:
             return render_template('chat.html')
+    except NoAuthorizationError:
+        return redirect(url_for('page_auth'))
     except Exception as e:
         global_logger.error(f"An error occurred: {e}")
 

@@ -194,6 +194,7 @@ Messages
   text-align: right;
   background: linear-gradient(120deg, #248A52, #257287);
   border-radius: 10px 10px 0 10px;
+  margin-right: 10px;
 }
 .messages .message.message-personal::before {
   left: auto;
@@ -292,10 +293,12 @@ Message Box
   resize: none;
   color: rgba(255, 255, 255, 0.7);
   font-size: 11px;
-  height: 17px;
   margin: 0;
   padding-right: 20px;
-  width: 265px;
+
+  height: -webkit-fill-available;
+  width: -webkit-fill-available;
+  align-content: center;
 }
 .message-box textarea:focus:-webkit-placeholder {
   color: transparent;

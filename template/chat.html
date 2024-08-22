@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
 
 <div class="chat">
     <div class="chat-title">
-        <h1>Fabio Ottaviani</h1>
-        <h2>Supah</h2>
+        <h1 id="username"></h1>
+        <h2 id="user_role">User</h2>
         <figure class="avatar">
             <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/156381/profile/profile-80.jpg" />
         </figure>
     </div>
     <div class="messages">
-        <div class="messages-content"></div>
+        <div class="messages-content">
+            <div class="mCSB_container"></div>
+        </div>
     </div>
     <div class="message-box">
         <textarea type="text" class="message-input" placeholder="Type message..."></textarea>

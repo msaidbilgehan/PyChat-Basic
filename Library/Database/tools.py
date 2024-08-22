@@ -1,6 +1,6 @@
 
 from Library import db, app, global_logger
-from Library.Database.models import User
+from Library.Database.models import User, MessageLog
 
 import os
 
@@ -56,8 +56,12 @@ def check_tables(table_names: list) -> bool:
         return False
 
 
+def get_user_if_exist(username: str):
+    return User.query.filter_by(username=username).first()
+
+
 def check_and_create_user(email: str, username: str, password: str) -> bool:
-    if User.query.filter_by(username=username).first() is not None:
+    if get_user_if_exist(username=username):
         return False
 
     user = User(
@@ -72,7 +76,33 @@ def check_and_create_user(email: str, username: str, password: str) -> bool:
 
 
 def authenticate_user(username, password):
-    user = User.query.filter_by(username=username).first()
+    user = get_user_if_exist(username=username)
     if user is not None and user.check_password(password):
         return user
     return None
+
+
+def send_message(username: str, content: str) -> bool:
+    user = get_user_if_exist(username=username)
+    try:
+        message = MessageLog(
+            user_id=user.id,  # type: ignore
+            content=content  # type: ignore
+        )
+        db.session.add(message)
+        db.session.commit()
+        return True
+    except Exception as e:
+        global_logger.error(f"Failed to send message: {e}")
+        return False
+
+
+def get_messages(user, last_request_time=None):
+    query = MessageLog.query.filter_by(user_id=user.id)
+
+    if last_request_time:
+        query = query.filter(MessageLog.timestamp > last_request_time)
+
+    messages = query.order_by(MessageLog.timestamp.desc()).limit(100)
+    messages_list = [{"content": msg.content, "timestamp": msg.timestamp.isoformat()} for msg in messages]
+    return messages_list
