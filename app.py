@@ -2,7 +2,6 @@ from Library.Configurations.environment import HOST, PORT
 from Library import app, socketio
 
 if __name__ == "__main__":
-
     # Comment out if you want to open the browser automatically with the given URL.
     # Useful for development.
     # def open_browser():

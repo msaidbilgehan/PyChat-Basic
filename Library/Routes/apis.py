@@ -1,6 +1,7 @@
 
 
 from Library import app
+from Library.Database.models import User
 from Library.Database.tools import check_user
 
 from flask import jsonify, request

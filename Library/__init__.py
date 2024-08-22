@@ -1,7 +1,7 @@
 
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
-from Library.Configurations.paths import FOLDER_TEMPLATE, FOLDER_STATIC, FOLDER_PUBLIC_FILES, LOGS_GENERAL  # , DB_FILE
+from Library.Configurations.paths import DIR_FOLDER_TEMPLATE, DIR_FOLDER_STATIC, DIR_FOLDER_PUBLIC_FILES, DIR_FILE_LOGS_GENERAL  # , DB_FILE
 from Library.Configurations.environment import SECRET_KEY, JWT_SECRET_KEY
 from Library.Scripts.tools import create_Logger
 
@@ -13,12 +13,12 @@ import logging
 ##########
 # LOGGER #
 ##########
-print(f"Logger initializing with the following path: {LOGS_GENERAL}")
+print(f"Logger initializing with the following path: {DIR_FILE_LOGS_GENERAL}")
 global_logger = create_Logger(
     name="global_logger",
     level_stdo=logging.DEBUG,
     level_file=logging.DEBUG,
-    path=LOGS_GENERAL,
+    path=DIR_FILE_LOGS_GENERAL,
     backupCount=3
 )
 global_logger.info("Logger initialized.")
@@ -30,8 +30,8 @@ global_logger.info("Logger initialized.")
 
 app = Flask(
     __name__,
-    template_folder=FOLDER_TEMPLATE,
-    static_folder=FOLDER_STATIC
+    template_folder=DIR_FOLDER_TEMPLATE,
+    static_folder=DIR_FOLDER_STATIC
 )
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY  # Use a secure, random key
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -48,7 +48,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # CORS(app)
 # CORS(app, origins=["https://<DOMAIN>:<PORT>"])
 
-app.config['UPLOAD_FOLDER'] = FOLDER_PUBLIC_FILES
+app.config['UPLOAD_FOLDER'] = DIR_FOLDER_PUBLIC_FILES
 
 
 ###############
@@ -60,8 +60,6 @@ db = SQLAlchemy(app)
 # JWT #
 #######
 jwt = JWTManager(app)
-
-
 
 #############
 # SOCKET IO #
@@ -76,3 +74,8 @@ socketio = SocketIO(
     # manage_session=False,
     # always_connect=True,
 )
+
+##########
+# Routes #
+##########
+from Library.Routes import pages, apis
