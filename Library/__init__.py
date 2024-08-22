@@ -1,9 +1,10 @@
 
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
-from Library.Configurations.paths import DIR_FOLDER_TEMPLATE, DIR_FOLDER_STATIC, DIR_FOLDER_PUBLIC_FILES, DIR_FILE_LOGS_GENERAL  # , DB_FILE
+from Library.Configurations.paths import DIR_FOLDER_TEMPLATE, DIR_FOLDER_STATIC, DIR_FOLDER_PUBLIC_FILES, DIR_FILE_LOGS_GENERAL, DIR_FILE_DB
 from Library.Configurations.environment import SECRET_KEY, JWT_SECRET_KEY
 from Library.Scripts.tools import create_Logger
+from Library.Database.models import User, MessageLog
 
 from flask import Flask
 # from flask_cors import CORS
@@ -36,8 +37,7 @@ app = Flask(
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY  # Use a secure, random key
 app.config['SECRET_KEY'] = SECRET_KEY
 
-# TODO: use FILE_DB  instead of 'sqlite:///chat_app.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chat_app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DIR_FILE_DB}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # CORS stands for Cross-Origin Resource Sharing, and it is a mechanism that allows web browsers to make requests
@@ -55,6 +55,8 @@ app.config['UPLOAD_FOLDER'] = DIR_FOLDER_PUBLIC_FILES
 # SQL Alchemy #
 ###############
 db = SQLAlchemy(app)
+with app.app_context():
+    db.create_all()  # Creates all tables defined in your models
 
 #######
 # JWT #
